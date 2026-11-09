@@ -1,0 +1,17 @@
+name: agent-interconnect
+services:
+  agent-interconnect:
+    build: ./server
+    container_name: agent-interconnect
+    restart: unless-stopped
+    # the relay host's Docker address pools are exhausted (2026-11-09): use the default bridge.
+    network_mode: bridge
+    env_file: .env
+    environment:
+      - TZ=Asia/Jerusalem
+    volumes:
+      - ./data:/data
+    ports:
+      - "8790:8790"
+    labels:
+      - com.centurylinklabs.watchtower.enable=false

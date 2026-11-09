@@ -1,0 +1,19 @@
+name: Build Windows client
+on:
+  push:
+    paths: ["client/**", ".github/workflows/build-windows-client.yml"]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "PySide6-Essentials>=6.7" pyinstaller
+      - run: pyinstaller --onefile --windowed --name AgentInterconnect client/interconnect.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AgentInterconnect-windows
+          path: dist/AgentInterconnect.exe

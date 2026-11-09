@@ -1,0 +1,8 @@
+[project]
+name = "agent-interconnect-client"
+version = "1.0"
+requires-python = ">=3.11"
+dependencies = ["PySide6-Essentials>=6.7"]
+
+[project.scripts]
+agent-interconnect = "interconnect:main"
