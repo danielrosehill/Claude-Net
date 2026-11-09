@@ -1,0 +1,21 @@
+[Unit]
+Description=Claude Agent Relay (MCP)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=claude-relay
+Group=claude-relay
+EnvironmentFile=-/etc/claude-relay/relay.env
+ExecStart=/opt/claude-relay/.venv/bin/claude-relay --config /etc/claude-relay/config.toml
+Restart=on-failure
+RestartSec=3
+StateDirectory=claude-relay
+ProtectSystem=strict
+ReadWritePaths=/var/lib/claude-relay
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

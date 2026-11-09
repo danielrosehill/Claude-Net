@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "agent-relay": {
+      "type": "http",
+      "url": "http://RELAY_HOST:7878/mcp/",
+      "headers": {
+        "Authorization": "Bearer OPTIONAL_SHARED_TOKEN",
+        "X-Client-Id": "claude-this-machine"
+      }
+    }
+  }
+}

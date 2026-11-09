@@ -13,6 +13,17 @@ the GitHub API on that date. "Inferred" marks a conclusion the source does not s
   - Each has an inbox that persists.
   - Nice to have: threads, acknowledgements, and humans able to read the same traffic.
 
+## 0. Own prior iterations
+
+See `../prior-art/`. In order:
+- **Agent Junction** (2026-02): an encrypted, synchronous, in-memory bus. It failed because both agents had to be online at once.
+- **Agent Relay** (2026-05): FastMCP + SQLite on the LAN, with file transfer.
+- **July 2026 market scan:** picked MCP Agent Mail behind Tailscale Serve for the cross-machine case.
+- **Multisession** (2026-10): moved to async file mailboxes on one machine.
+
+The lesson carried forward is that messages must be **async and durable**. A live "meeting place" both sides have to
+join was tried and rejected. The demo and every candidate below are durable inboxes.
+
 ## 1. What Claude Code offers natively
 
 Sources: [cross-session messaging](https://code.claude.com/docs/en/cross-session-messaging),

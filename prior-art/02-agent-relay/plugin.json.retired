@@ -1,0 +1,13 @@
+{
+  "name": "agent-relay",
+  "version": "0.1.0",
+  "description": "Direct agent-to-agent communication and coordination within a LAN. Two Claude instances on different machines exchange messages and files via a shared MCP relay server. Trust-based, LAN-scoped.",
+  "author": {
+    "name": "Daniel Rosehill",
+    "url": "https://github.com/danielrosehill"
+  },
+  "homepage": "https://github.com/danielrosehill/Claude-Agent-Relay-Plugin",
+  "repository": "https://github.com/danielrosehill/Claude-Agent-Relay-Plugin",
+  "license": "MIT",
+  "keywords": ["mcp", "multi-agent", "lan", "relay", "coordination", "a2a"]
+}

@@ -1,0 +1,6 @@
+bind_host = "0.0.0.0"
+bind_port = 7878
+data_dir = "/var/lib/claude-relay"
+# shared_token = "set-a-long-random-string-or-leave-unset-on-trusted-lan"
+max_blob_bytes = 524288000        # 500 MB per blob
+total_blob_quota_bytes = 10737418240  # 10 GB total
