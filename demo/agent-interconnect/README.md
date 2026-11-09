@@ -23,7 +23,7 @@ and LAN addresses, and secret-store IDs were replaced: people are `alice` / `bob
 ## State at copy time
 
 - **Relay:** deployed. REST and the MCP tools, including `wait_for_reply`, were tested, plus one real agent send.
-- **Windows client:** built and being installed. Not yet verified end to end.
+- **Windows client:** built and installed. Reported working end to end on 2026-11-09 (by the user, not verified by this repo).
 - **Linux client:** not installed.
 
 ## Known limits (input to the research)
