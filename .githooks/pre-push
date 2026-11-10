@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Pre-push leak guard for Claude-Net (PUBLIC). Blocks a push that would publish anything from the PRIVATE
+# implementation: host names, people, addresses, domains, secret names/IDs, image metadata.
+# Enable once per clone: git config core.hooksPath .githooks
+#
+# The real term list is PRIVATE and lives outside this repo, in the private implementation's repo:
+#   <private repo>/.claude/skills/update-public-companion/check-public.sh  (+ denylist.txt)
+# Set CLAUDE_NET_CHECKER to its path, or keep it at the default below. Without it, only the generic checks run
+# (private/tailnet IP ranges, email addresses other than the public commit address) and the hook says so.
+set -uo pipefail
+checker="${CLAUDE_NET_CHECKER:-$HOME/repos/github/homelab-infra/Residence-Claude/.claude/skills/update-public-companion/check-public.sh}"
+zero=0000000000000000000000000000000000000000
+fail=0
+while read -r _lref lsha _rref rsha; do
+  [ "$lsha" = "$zero" ] && continue                       # branch delete
+  if [ "$rsha" = "$zero" ]; then range="$lsha --not --remotes"; else range="$rsha..$lsha"; fi
+  if [ -x "$checker" ] || [ -f "$checker" ]; then
+    bash "$checker" "$(git rev-parse --show-toplevel)" --range "$range" || fail=1
+  else
+    echo "pre-push: private checker not found ($checker); running generic checks only." >&2
+    # shellcheck disable=SC2086
+    if git log -p --no-color --format='%ae %ce%n%B' $range | grep -E '^\+[^+]|@' \
+       | grep -n -E '\b(10\.[0-9]+|192\.168|100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7]))\.[0-9]+\.[0-9]+\b|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}' \
+       | grep -v -E 'commits@danielrosehill\.com|users\.noreply\.github\.com|noreply@anthropic\.com|public@danielrosehill\.com'; then
+      fail=1
+    fi
+  fi
+done
+if [ "$fail" != 0 ]; then
+  echo "pre-push: BLOCKED. The lines above would publish PRIVATE details. Rewrite them (amend/rebase so they leave history too)." >&2
+  exit 1
+fi

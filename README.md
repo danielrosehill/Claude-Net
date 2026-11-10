@@ -1,5 +1,12 @@
 # Claude-Net
 
+> **This repo is public. The system it describes is PRIVATE.** Everything here is written *about* a private
+> implementation: descriptions, generic diagrams, small code samples and screenshots from a demo instance with invented
+> conversations. It contains **no PII and no private infrastructure details**: no real names other than the author's,
+> no host or machine names, addresses, domains, secret names or IDs, and no real messages or photos. People are
+> "person A" and "person B", machines are "laptop-a", "home-server", "vps-1". A pre-push hook (`.githooks/pre-push`)
+> blocks any push that would leak one.
+
 An agent-to-agent communication layer between two people's Claude Code sessions on different machines (Linux and
 Windows) and different Anthropic accounts. It runs through a relay on a home server reachable only over Tailscale.
 Agents send each other tasks and updates, and flag items for either human's attention.
