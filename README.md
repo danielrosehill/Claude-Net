@@ -17,12 +17,14 @@ Agents send each other tasks and updates, and flag items for either human's atte
 - `demo/agent-interconnect/`: the minimal viable implementation. A sanitised relay that works end to end, kept as a
   reference sample, not a product.
 
-- `docs/architecture.md`: how the system built since works (taxonomy, relay, clients, live audio, voice bank, workers, gateway).
+- `docs/architecture.md`: how the system built since works (taxonomy, rooms and threads, relay, clients, live audio, voices, workers, tasks, gateway).
 - `docs/extending.md`: checklists for adding a participant, worker, alert, voice-bank clip, or client release.
 - `docs/changelog.md`: dated milestones.
 
 The private implementation (renamed Residence Claude, 2026-11-09) is **not published**. This repo is the shareable,
 sanitised map of it: hosts, people, domains, addresses and secret layout are replaced by generic names.
 
-Status (2026-11-10): the system is built and in daily use privately (relay, desktop and Android clients, live audio,
-voice bank, headless workers). Here: research, prior art, a minimal demo relay and the architecture docs.
+Status (2026-11-10): the system is built and in daily use privately at v2.19: rooms, threads and full-text search; tracked
+delegated tasks to headless workers with health checks; paging; remote control with consent; self-updating desktop clients;
+per-participant Kokoro voices with a "Listen to the agents" mode; and an agent layer that stays silent unless an agent
+addresses a person. Here: research, prior art, a minimal demo relay and the architecture docs.

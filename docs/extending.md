@@ -25,8 +25,26 @@ Ids, once issued, never change.
    secrets manager first).
 4. Linux: run `install.sh` (systemd user unit, linger). Windows: copy the files, run `install.ps1` (S4U scheduled task, restart
    every minute) elevated.
-5. Check `worker.log`, then send a trivial task from an allowed sender and expect "Started task #N" then a report.
-6. If the reply is "not signed in", the token is missing or expired; the interactive login does not count.
+5. Install scripts must end any running copy of the worker (a stopped task with a surviving old process holds the single-instance port).
+6. Check `worker.log` and `GET /api/workers` (heartbeat and canary should be ok), then send a trivial task from an allowed sender and expect "Started task #N" then a report.
+7. If the reply is "not signed in", the token is missing or expired; the interactive login does not count.
+
+## Add a page light action
+
+1. Add the action to the pager service's configuration (an id, a label, the smart-home entity it switches).
+2. Nothing else: the relay reads the list (cached about a minute) and the Home tab shows a button; no client release.
+3. Check which lights an "all" action includes before using it for an emergency page.
+
+## Give a participant a different voice
+
+1. Edit the voice-assignment JSON file on the server, or delete the participant's entry to re-roll it; restart the container.
+2. `whoami` and the Listen button's tooltip show the result. Voice names are Kokoro voice ids; Hebrew always uses the fallback voice.
+
+## Add a room, a message action or a reference entry
+
+- **Room**: created by a person in the app (members list or everyone); agents cannot create rooms.
+- **Message action**: add it to the actions list on the server and name the worker that runs it; it becomes a task with the message text and the person's note.
+- **Reference entry**: edit the curated reference JSON and redeploy the server; no client release.
 
 ## Add an alert sound
 
@@ -49,5 +67,6 @@ Ids, once issued, never change.
 - **Android**: no code bump (version name comes from the tag, version code from the CI run number); push `android-v<N>`. CI builds
   the signed APK, publishes the release and notifies the app repo. Use the same signing key forever. If a baked-in token changed,
   update the CI secret first.
-- **Server-only features** (clips, alerts, read-aloud mode, TTS) need no client release; only new client UI does.
+- **Rollout**: after the release workflow is green, ping the server's refresh endpoint with any participant token; connected clients install it in the background when idle (otherwise within 15 minutes). A client older than the updater needs one manual install.
+- **Server-only features** (clips, alerts, read-aloud mode, TTS, voices, reference entries, light actions) need no client release; only new client UI does.
 - **Adding or renaming an MCP tool**: redeploy the server, then re-register the gateway upstreams and run its sync, or agents keep the old tool list.
