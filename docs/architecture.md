@@ -125,11 +125,18 @@ One Python FastMCP app (`mcp` package pinned below 2), Docker, one port (8790 in
   nudge (pop-up, chime, shake); file attach/drag-drop; soundboard; Say dialog; mute. Since v2.15 a tabbed shell: Chat (room
   box, Quick chat, thread list with search), Home, Calendar, Reference, and since v2.17 Network (people, machines and Claudes
   with status dots). Configurable shortcuts (v2.13; hold keys are single letters that type on a tap and act on a 350 ms hold).
+  Since v2.23 the compose area is two lines (attach, message box, Send; then recipient, Pager, Talk, Call, **More ▾**) and
+  occasional actions live in the More menu; since v2.25 a Pager tab sits second.
 - **Self-update** (v2.13): the server caches the newest release and serves it; a refresh ping makes connected clients check
   at once (otherwise every 15 minutes). The client downloads, verifies a sha256 and installs only when idle (no focus, talk,
   horn or recording), then restarts. Linux installs the package with passwordless sudo; Windows applies the zip from a hidden
   script into the same folder after the app exits. Builds run from source never update. Android updates through the
   household's own app repository.
+- **Code patches** (v2.23): the frozen executable is a launcher that runs a newer copy of the client's `.py` files from a
+  per-user patch folder when one is installed, so most updates ship as a version bump on the main branch with no build and
+  no new executable. The server zips the files from the repository and advertises the patch next to the release; the client
+  installs it through the same idle-then-restart path. Failed patches are recorded and skipped, a newer full release wins,
+  and a patch can only import modules the build already bundles.
 - **Notification batching** (v2.18): text and file messages collect for 2 s after the last one (6 s at most) and go out as one
   toast and one announcement per sender; a batch of only agent messages waits for a 20 s cooldown after the previous one; a
   person's message is never held; nudges, horns, clips, pages and control requests stay immediate. Nothing is dropped.
@@ -137,7 +144,8 @@ One Python FastMCP app (`mcp` package pinned below 2), Docker, one port (8790 in
   also toasts, pop-ups, taskbar flashing and shake. Emergency pages and remote-control prompts still come through.
 - **Android app** (Kotlin, Jetpack Compose). A foreground service holds `wss://.../api/live?mode=events`; a message event
   triggers a fetch. It notifies, reads aloud, plays clips and horns, records voice clips. It has no live push-to-talk (as of
-  2026-11-10). Distributed through a private F-Droid-style repo and GitHub Releases, signed with one long-lived key.
+  2026-11-10). Since 1.3–1.5: a bottom bar Chat · Pager · Fun, mascot overlays drawn over other apps, high-priority page and
+  warning alerts, and a Permissions screen. Distributed through a private F-Droid-style repo and GitHub Releases, signed with one long-lived key.
 - Agents need no client: they call MCP tools.
 
 ## Live push-to-talk and horn
@@ -155,6 +163,23 @@ Desktop only, both directions, over `/api/live`:
   becomes an `airhorn` message the recipient's app plays on its next poll. Phones connect event-only, so they always get the fallback.
 - The horn is a public-domain (CC0) locomotive-horn sample: an attack, then a looped sustain section with a baked crossfade, then a release.
 - Measured 2026-11-09 locally: a 2.0 s hold sent 113 frames, all received, 0 dropped.
+
+## Calls
+
+Two-way calls between the desktop apps (v2.20) reuse the live link: call signalling is a text frame
+`{"type":"call","to","action","id"}` with action `ring|accept|decline|hangup|busy`, relayed by the server to the person's live
+sockets (a ring to nobody gets `unavailable`); the server keeps no call state. Audio is ordinary live frames in both directions
+(about 48 KB/s each way). Rings for 30 s, then a missed-call toast; muted means declined at once. No echo cancellation in Qt, so
+the microphone is ducked while the far side is loud. Tested with two headless clients on a scratch server; not yet between two
+real machines with microphones (2026-11-10).
+
+## Mascots
+
+`mascot(to, character, sign, announce, mode)` (MCP) or `POST /api/mascot` stores a `mascot` message. The recipient's desktop
+plays a frameless, click-through, always-on-top overlay that never takes focus: Corn floats down under a balloon, Herman walks
+across, Hilbert pops up; mode `sit` has Corn or Herman sit on a stool for a minute. A sign carries up to 80 characters; an
+announcement adds a bugle, the air horn and a voice-bank clip in the character's voice. Sprites are base64 PNGs in a Python
+module, so the bundler needs no change. Muted: a toast only. Android (1.4) redraws the same animations over other apps.
 
 ## Remote control
 
@@ -175,6 +200,10 @@ notify chimes); their phone gets a push through a separate pager service, which 
 lights at the same time. An Acknowledge button (which never takes keyboard focus and arms after 1.5 s) cancels the repeats and
 tells the sender. The Home tab has the page form and a button per light action; new light actions added to the pager service
 appear with no client release.
+
+Since v2.25 the **Pager** tab and button put ready-made messages first: a JSON file on the server groups them (urgent ones send
+an `asap` page; arrivals, "on the way" and status lines send an ordinary message; a `…` asks for the missing words). Edit the
+file and redeploy the server to change them; no client release.
 
 ## Voice bank, TTS, alerts
 
@@ -310,12 +339,13 @@ only `/api/*` is published through a tunnel; the bearer token is the sole auth t
   is distributed through an authenticated repo). A rotated token means updating the CI secret and cutting a new Android release.
 - Secret names keep a legacy prefix from before the rename on purpose: renaming would touch every layer for no gain.
 
-## Known limits (as of 2026-11-10, v2.19)
+## Known limits (as of 2026-11-12, v2.25)
 
 - Threads are real now (rooms, threads, Quick chat, tracked tasks), but there is no direct agent-to-agent transport: agents talk
   through the relay. Considered and not built; relaying takes milliseconds, and the delays that mattered were the old 5 s worker poll
   (fixed) and each agent's own model turn.
-- Live audio is desktop only, window-local keys.
+- Live audio and calls are desktop only, window-local keys.
+- Code patches can only use modules the frozen build already bundles; a new dependency or launcher change needs a full release.
 - The Android app (1.x) predates rooms: it shows every message it may see in one list, renders pages as plain text, has no
   Home/Calendar/Reference/Network tabs, and does not know the agent-only flag, so it still shows and notifies for agent-to-agent traffic.
 - The worker runs with permissions skipped; it trusts its allowed-sender list and the private network.

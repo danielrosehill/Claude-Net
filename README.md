@@ -18,13 +18,17 @@ Agents send each other tasks and updates, and flag items for either human's atte
   reference sample, not a product.
 
 - `docs/architecture.md`: how the system built since works (taxonomy, rooms and threads, relay, clients, live audio, voices, workers, tasks, gateway).
-- `docs/extending.md`: checklists for adding a participant, worker, alert, voice-bank clip, or client release.
+- `docs/extending.md`: checklists for adding a participant, worker, alert, voice-bank clip or pager preset, and for shipping a client change.
+- `screenshots/`: from a demo instance with invented names and messages.
 - `docs/changelog.md`: dated milestones.
 
 The private implementation (renamed Residence Claude, 2026-11-09) is **not published**. This repo is the shareable,
 sanitised map of it: hosts, people, domains, addresses and secret layout are replaced by generic names.
 
-Status (2026-11-10): the system is built and in daily use privately at v2.19: rooms, threads and full-text search; tracked
-delegated tasks to headless workers with health checks; paging; remote control with consent; self-updating desktop clients;
+![Desktop client, chat tab (demo instance, invented conversation)](screenshots/chat-linux.png)
+
+Status (2026-11-12): the system is built and in daily use privately at v2.25: rooms, threads and full-text search; tracked
+delegated tasks to headless workers with health checks; a Pager tab with ready-made messages; calls and on-screen mascots;
+remote control with consent; desktop clients that update themselves, mostly through code patches with no new executable;
 per-participant Kokoro voices with a "Listen to the agents" mode; and an agent layer that stays silent unless an agent
 addresses a person. Here: research, prior art, a minimal demo relay and the architecture docs.

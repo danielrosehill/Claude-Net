@@ -60,10 +60,19 @@ Ids, once issued, never change.
 3. Commit the wav and JSON, redeploy the server. Clips upload to object storage on first play under a content-hashed key.
 4. Clients show it after their next start; no client release.
 
-## Cut a client release
+## Add a pager preset
 
-- **Desktop**: bump `__version__` in the client, commit, tag `v<that version>` (the tag must equal `__version__` or CI fails), push the
-  tag. CI builds the Windows exe and Linux deb and publishes a GitHub Release. Install on each machine with the update helper.
+- Add an entry to the server's presets JSON under a group (`page` kind for urgent ones with a tier, `message` for the rest;
+  put `…` where the sender should type the missing words; `secondary` groups start collapsed). Redeploy the server. Both
+  clients read `GET /api/presets`, so no client release.
+
+## Ship a client change
+
+- **Desktop, the usual way (code patch, v2.23+)**: bump `__version__` in the client, commit, push to the main branch, ping
+  the server's refresh endpoint. Clients take the new `.py` files when idle and restart; no tag, build or new executable.
+  A pushed bump ships within 5 minutes even without the ping, so bump only when you mean it.
+- **Desktop, full release** (new dependency or Qt module, launcher or packaging change): bump `__version__` in the client, commit, tag `v<that version>` (the tag must equal `__version__` or CI fails), push the
+  tag. CI builds the Windows exe and Linux deb and publishes a GitHub Release, then the refresh ping rolls it out.
 - **Android**: no code bump (version name comes from the tag, version code from the CI run number); push `android-v<N>`. CI builds
   the signed APK, publishes the release and notifies the app repo. Use the same signing key forever. If a baked-in token changed,
   update the CI secret first.

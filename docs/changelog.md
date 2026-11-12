@@ -2,9 +2,54 @@
 
 Dates are absolute. Versions are those of the private implementation.
 
+## 2026-11-12
+
+- **Pager front and centre, fun to the side (desktop v2.25, Android 1.5).** Paging is serious, so it became the first
+  button in the compose row and a tab on both clients (desktop tab order Chat, Pager, Home, ...; Android bottom bar Chat,
+  Pager, Fun). It offers ready-made messages from a JSON file on the server (`GET /api/presets`): an *Urgent* group sends
+  an `asap` page (alarm window on the desktop plus a phone push), other groups (arrivals, "on the way", status lines) send
+  an ordinary message to that person. A preset containing `…` asks for the missing words first. Editing the file and
+  redeploying the server changes the buttons with no client release. The horn, nudge, clips and mascots moved into
+  **More ▾ → Fun** (the horn hotkey still works); emergency pages with options stay on the Home tab.
+- **Code patches: client updates without a new executable (desktop v2.23, first patch v2.24).** Every release used to be a
+  freshly built PyInstaller executable, and Windows antivirus tends to scan, and sometimes quarantine, a new unsigned
+  executable. Since v2.23 the frozen entry point is a small launcher: when a newer copy of the client's `.py` files is
+  installed in a per-user patch folder, it loads those (by file path, because PyInstaller's frozen importer would otherwise
+  win) instead of the bundled ones. The server builds the patch from the client files on the main branch (GitHub contents
+  API, re-checked every 5 minutes and on the refresh ping; downloads only when a blob sha changes; zipped with fixed
+  timestamps so the sha256 is stable) and advertises it beside the release in `/api/client/latest`. Shipping a client change
+  is now: bump the version, push, ping. The client downloads, verifies, unpacks, waits for idle and restarts the same
+  executable. A patch that fails to import or crashes out of `main()` is recorded as bad and the bundled build restarts; a
+  newer full release always wins. Limit: a patch can only import what the frozen build bundles, so a new dependency still
+  needs a tagged release. Verified the same day on the Linux laptop: a version-only 2.24 was running two seconds after the ping,
+  with no CI build. Builds took only about two minutes, so speed was not the problem; the new executable was.
+- **Streamlined desktop window (v2.23).** The compose row had grown to eleven buttons. Now: paperclip, message box and
+  Send on one line; under it the recipient on the left and the live actions on the right, with everything occasional in a
+  single **More ▾** menu (nudge, clips and Say, mascots, page with options, remote control). The sidebar puts search at
+  the top and "Threads" with a small **＋ New** on one line. The tray menu groups its five toggles under *Options* and the
+  timed mutes under *Do not disturb*.
+
 ## 2026-11-10
 
-Later the same day (v2.9 to v2.19), newest first:
+Later the same day (v2.9 to v2.22), newest first:
+
+- **Mascots on the phone, warning pages, permissions screen (Android 1.4, desktop v2.22).** The phone redraws the
+  desktop mascot animations over other apps (needs the "display over other apps" permission; Android never draws over
+  the lock screen, so a mascot that arrives while locked waits and plays silently later). A page to the phone owner is a
+  high-priority alert with vibration, and a new *warning* flavour of page honks repeatedly instead of one blast; the
+  phone can send one from its chat actions. A Permissions screen lists what the app needs and opens itself once after an
+  update if something is missing.
+- **Mascots sit down (desktop v2.21, Android 1.3).** Corn and Herman can walk in carrying a stool, set it down near the
+  screen edge and sit for a minute (breathing, Corn dozing, Herman humming), optionally beside a sign, then pick the stool
+  up and leave. Android gained a Mascots tab to send them.
+- **Mascots and calls (desktop v2.20).** Three characters (Corn the sloth, Herman Poppleberry the donkey, Hilbert
+  Flumingtop) can be sent onto the other person's screen as a frameless, click-through, always-on-top overlay: Corn
+  floats down under a balloon, Herman waddles across, Hilbert pops up. Each can carry a sign ("Dinner's ready!") or make
+  an announcement: bugle, air horn, then a voice-bank clip in that character's voice. On KDE Wayland a window cannot be
+  moved frame by frame, so each overlay is a tall or full-screen transparent window and the motion is drawn inside it.
+  Also **calls**: a two-way line between the desktop apps over the existing live-audio WebSocket (signalling as text
+  frames `ring|accept|decline|hangup|busy`, the server keeps no call state; audio as ordinary live frames). Qt has no echo
+  cancellation, so the mic is ducked while the other side is loud; headphones are best.
 
 - **Agent layer hidden and silent by default (desktop v2.19, worker v4).** Messages an agent or worker sends to other
   agents/workers carry a computed `agents_only` flag (nothing stored, so history is covered too). Clients no longer notify
